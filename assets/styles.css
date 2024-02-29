@@ -1,0 +1,75 @@
+body {
+    font-family: system-ui, sans-serif;
+    /* overflow: auto; */
+    height: 100%;
+    font: 12px;
+    color: black;
+    filter: progid:DXImageTransform.Microsoft.Gradient(GradientType=0, StartColorStr='#269abe', EndColorStr='#FFFFFF')
+}
+
+.container {
+    padding: 15pt;
+    height: 100%;
+}
+
+.align-center {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+table {
+    width: 100%;
+}
+
+input[type="text"],
+textarea {
+    background: #f6f5f5;
+    min-height: 2em;
+}
+
+.checkbox {
+    margin: 0;
+    color: aqua;
+    width: 1.15em;
+    height: 1.15em;
+    border: 0.15em solid aqua;
+    border-radius: 0.15em;
+}
+
+.btn {
+    padding: 10px 15px;
+    font-size: 11pt;
+    border-radius: 10em;
+    color: #fff;
+    border: 0.08em solid;
+    border-color: #C4C3BB #A4A399 #A4A399 #C4C3BB;
+}
+
+.btn.select-folder {
+    background: #269abe;
+}
+
+.btn.select-folder:hover {
+    background: #077ca0;
+}
+
+.btn.search-btn {
+    background: #13964c;
+    margin: 3pt;
+}
+
+.btn.search-btn:hover {
+    background: #107a3e;
+}
+
+.copyright {
+    padding: 10px 15px;
+    font-size: 9pt;
+    color: #bac1cc; 
+}
+
+.app-version {
+    font-size: 8pt;
+    color: #bac1cc
+}
