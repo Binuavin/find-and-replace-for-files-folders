@@ -1,15 +1,15 @@
 <!DOCTYPE html>
 <html>
-<head> 
+
+<head>
     <title>Find & Replace for File Names</title>
     <meta charset="UTF-8">
     <HTA:APPLICATION 
-        ID="renameFilesApp"
-        APPLICATIONNAME="Find & Replace for File Names"
-        BORDER="thin"
-        BORDERSTYLE="normal"
-        CAPTION="yes"
-        CONTEXTMENU="no"  'Prevent Content menu in window
+        ID="renameFilesApp" 
+        APPLICATIONNAME="Find & Replace for File Names" 
+        BORDER="thin" BORDERSTYLE="normal"
+        CAPTION="yes" 
+        CONTEXTMENU="no"
         ICON="assets/find_and_replace_filenames_icon.ico"
         INNERBORDER="no"
         MAXIMIZEBUTTON="yes"
@@ -23,7 +23,7 @@
         VERSION="1.0"
         WINDOWSTATE="0"
     >
-    <link rel="stylesheet" type="text/css" href="assets/styles.css">
+    <link rel="stylesheet" type="text/css" href="assets/styles.css"> 
     <script language="VBScript" src="base_vbs_script.vbs"></script>
 </head>
 <body onkeydown="CheckKeyPress">
@@ -41,9 +41,7 @@
                     </tr>
                     <tr>
                         <td><label for="folderPath">Folder Path:</label></td>
-                        <td><textarea style="overflow:hidden;" width="100%" rows="4" cols="55" id="folderPath"
-                                required></textarea>
-                        </td>
+                        <td><textarea style="overflow:hidden;" width="100%" rows="4" cols="55" id="folderPath"></textarea></td>
                         <td align="center"><input class="btn select-folder" id=selectFolderBtn type="button" value="Select Folder"
                                 onClick=OpenFolderSelector()></td>
                     </tr>
@@ -57,7 +55,6 @@
                     <tr>
                         <td><label for="replaceWord">Replacement Word:</label></td>
                         <td colspan="2"><input style="width:63%" type="text" id="replaceWord" required></td>
-
                     </tr>
                     <tr>
                         <td><label for="fileExtension">File Extension:</label></td>
@@ -70,16 +67,18 @@
                     </tr>
                     <tr>
                         <td><label for="includeSubfolders">Search including Subfolders:</label></td>
-                        <td colspan="2"><input type="checkbox" class="checkbox" id="includeSubfolders"></td>
+                        <td colspan="2"><input type="checkbox" class="checkbox" id="includeSubfolders" onclick="subFolderCheckValue"></td>
                     </tr>
                     <tr>
                         <td><label for="renameFolders">Include Subfolder Names:</label></td>
-                        <td colspan="2"><input type="checkbox" class="checkbox" onclick="updateBtnNameOnClick" id="renameFolders"></td>
+                        <td colspan="2"><input type="checkbox" class="checkbox" id="renameFolders" onclick="updateBtnNameOnClick" ></td>
                     </tr>
                     <tr></tr>
                     <tr align="center">
                         <td colspan="3"><input class="btn search-btn" id="runbutton" type="button" value="Rename Files" onclick="RenameFiles()"></td>
                     </tr>
+                     <!-- Hidden input fields to store custom properties -->
+                    <input type="hidden" id="propToCheckSubFoldersUserClick" value="user_not_checked">
                 </table>
             </form>
         </div>
