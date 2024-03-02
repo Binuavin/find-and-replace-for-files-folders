@@ -17,7 +17,7 @@ _This is my vbScript learning project._
 
 ## Screenshots
 
-![Find and Replace for Files and Folders](assets/find_and_replace_for_files_and_folders_thumbnail_v1.0.png)
+![Find and Replace for Files and Folders](assets/find_and_replace_for_files_and_folders_thumbnail_v1.0.1.png)
 
 ## Dependencies
 
