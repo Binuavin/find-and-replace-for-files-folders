@@ -54,7 +54,8 @@
                     </tr>
                     <tr>
                         <td><label for="replaceWord">Replacement Word:</label></td>
-                        <td colspan="2"><input style="width:63%" type="text" id="replaceWord" required></td>
+                        <td><input style="width:95%" type="text" id="replaceWord" required></td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td><label for="fileExtension">File Extension:</label></td>
@@ -67,11 +68,14 @@
                     </tr>
                     <tr>
                         <td><label for="includeSubfolders">Search including Subfolders:</label></td>
-                        <td colspan="2"><input type="checkbox" class="checkbox" id="includeSubfolders" onclick="subFolderCheckValue"></td>
+                        <td><input type="checkbox" class="checkbox" id="includeSubfolders" onclick="subFolderCheckValue"></td>
+                        <td align="center"><p style="font-size:8pt;font-style:italic;">(Enable recursive search inside subfolders)</p></td>
                     </tr>
                     <tr>
                         <td><label for="renameFolders">Include Subfolder Names:</label></td>
-                        <td colspan="2"><input type="checkbox" class="checkbox" id="renameFolders" onclick="updateBtnNameOnClick" ></td>
+                        <td><input type="checkbox" class="checkbox" id="renameFolders" onclick="updateBtnNameOnClick" ></td>
+                        <td align="center"><p style="font-size:8pt;font-style:italic;">(Replace folder names that matches the search)</p></td>
+
                     </tr>
                     <tr></tr>
                     <tr align="center">
