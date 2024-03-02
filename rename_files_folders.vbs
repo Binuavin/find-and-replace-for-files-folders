@@ -3,37 +3,44 @@
 Sub RenameFiles(folderPath, searchWord, replaceWord, includeSubfolders, searchWordMatchCase, changeExtension, fileExtension, renameFolders)
     Dim objFso, folder
     Set objFso = CreateObject("Scripting.FileSystemObject")
-    
+
+    Dim dt : dt = Now()
+    Dim datetime : datetime = Year(dt) & "-" & Month(dt) & "-" & Day(dt) & "_" & Hour(dt) & "-" & Minute(dt) & "-" & Second(dt)
+
+    Dim outputFile : outputFile = folderpath & "\output-" & datetime & ".txt"
+
     ' Validate folder path
     If Not objFso.FolderExists(folderPath) Then
-        WScript.Echo "Folder does not exist: " & folderPath
+        MsgBox "Folder does not exist: " & folderPath, vbExclamation, "Error"
         Exit Sub
     End If
-    
+
     ' Get the folder object
     Set folder = objFso.GetFolder(folderPath)
-    
+
+    LogToFile outputFile, "Info || Starting Search at: " & dt & vbCrLf
+
     ' Rename files in the current folder
-    RenameFilesInFolder folder, searchWord, replaceWord, searchWordMatchCase, changeExtension, fileExtension
-    
+    RenameFilesInFolder outputFile, folder, searchWord, replaceWord, searchWordMatchCase, changeExtension, fileExtension
+
     ' If includeSubfolders is true, rename files in subfolders recursively
     If includeSubfolders Then
-        RenameFilesInSubfolders folder, searchWord, replaceWord, searchWordMatchCase, changeExtension, fileExtension, renameFolders
+        RenameFilesInSubfolders outputFile, folder, searchWord, replaceWord, searchWordMatchCase, changeExtension, fileExtension, renameFolders
     End If
-    
+
     ' Add Output Message
-    DisplayMessage("Success")
-    
+    DisplayMessage "Success", outputFile
+
 End Sub
 
 ' Subroutine to rename files in a folder
-Sub RenameFilesInFolder(folder, searchWord, replaceWord, searchWordMatchCase, changeExtension, fileExtension)
+Sub RenameFilesInFolder(outputFile, folder, searchWord, replaceWord, searchWordMatchCase, changeExtension, fileExtension)
     Dim file, fileName, newFileName, fileExt
     Dim objFso : Set objFso = CreateObject("Scripting.FileSystemObject")
     
     ' Initialize progress counter
-    Dim fileCount, currentCount
-    fileCount = folder.Files.Count
+    Dim currentCount
+    ' Dim fileCount : fileCount = folder.Files.Count
     currentCount = 0
 
     ' Iterate through each file in the folder
@@ -53,6 +60,10 @@ Sub RenameFilesInFolder(folder, searchWord, replaceWord, searchWordMatchCase, ch
                     newFileName = Left(newFileName, InStrRev(newFileName, ".")) & fileExtension
                 End If
                 file.Move objFso.BuildPath(folder.Path, newFileName)
+
+                ' Log the change to the output file
+                LogToFile outputFile, "File || """ & folder.Path & "\" & fileName & """ || " & newFileName
+                currentCount = currentCount + 1
             End If
         Else
             ' Check if the search word (case insensitive) is found in the filename
@@ -82,37 +93,57 @@ Sub RenameFilesInFolder(folder, searchWord, replaceWord, searchWordMatchCase, ch
                     End If
                     ' Move the file with the new filename
                     file.Move objFso.BuildPath(folder.Path, newFileName)
+
+                    ' Log the change to the output file
+                    LogToFile outputFile, "File || """ & folder.Path & "\" & fileName & """ || " & newFileName
+                    currentCount = currentCount + 1 
                 End If
             End If
         End If
 
         ' Update progress
-        currentCount = currentCount + 1
+        ' currentCount = currentCount + 1
+        ' UpdateProgress currentCount, fileCount
     Next
-    ' UpdateProgress currentCount, fileCount
+    If currentCount = 0 Then
+        LogToFile outputFile, "Note || """ & folder.Path & """ || No files found with the search."
+    End If
 End Sub
 
 ' Subroutine to rename files in subfolders and Folder names recursively
-Sub RenameFilesInSubfolders(folder, searchWord, replaceWord, searchWordMatchCase, changeExtension, fileExtension, renameFolders)
+Sub RenameFilesInSubfolders(outputFile, folder, searchWord, replaceWord, searchWordMatchCase, changeExtension, fileExtension, renameFolders)
     Dim subfolder, objFso
     Set objFso = CreateObject("Scripting.FileSystemObject")
 
+    ' Initialize progress counter
+    Dim currentSubCount
+    ' Dim fileCount : fileCount = folder.Files.Count
+    currentSubCount = 0
+
     ' Iterate through each subfolder
     For Each subfolder In folder.SubFolders
+
+        Dim originalFolderName : originalFolderName = subfolder.Name
+        Dim originalFolderPath : originalFolderPath = subfolder.Path
         ' Rename files in the subfolder
-        RenameFilesInFolder subfolder, searchWord, replaceWord, searchWordMatchCase, changeExtension, fileExtension
-        
+        RenameFilesInFolder outputFile, subfolder, searchWord, replaceWord, searchWordMatchCase, changeExtension, fileExtension
+
         If renameFolders Then
             ' Rename the subfolder itself if needed
             Dim newFolderName
             If searchWordMatchCase Then
                 If InStr(subfolder.Name, searchWord) > 0 Then
+
                     If replaceWord <> "" Then ' Check if replaceWord is not empty
                         newFolderName = Replace(subfolder.Name, searchWord, replaceWord)
                     Else
                         newFolderName = Replace(subfolder.Name, searchWord, searchWord) ' Replace with itself as the replaceWord is empty
                     End If
                     subfolder.Name = newFolderName
+
+                    ' Log the change to the output file  
+                    LogToFile outputFile, "Folder || """ & originalFolderPath & """ || " & subfolder.Name
+                    currentSubCount = currentSubCount + 1
                 End If
             Else
                 Dim regex, match
@@ -133,16 +164,23 @@ Sub RenameFilesInSubfolders(folder, searchWord, replaceWord, searchWordMatchCase
                             newFolderName = regex.Replace(subfolder.Name, searchWord)
                         End If
                         subfolder.Name = newFolderName
+
+                        ' Log the change to the output file 
+                        LogToFile outputFile, "Folder || """ & originalFolderPath & "\" & originalFolderName & """ || " & newFolderName
+                        currentSubCount = currentSubCount + 1
                     End If
                 End If
             End If
         End If
-        
+
         ' Recursive call to rename files in subfolders of subfolder
-        RenameFilesInSubfolders subfolder, searchWord, replaceWord, searchWordMatchCase, changeExtension, fileExtension, renameFolders
+        RenameFilesInSubfolders outputFile, subfolder, searchWord, replaceWord, searchWordMatchCase, changeExtension, fileExtension, renameFolders
+
+        If currentSubCount = 0 Then
+            LogToFile outputFile, "Note || No files found with the search in " & originalFolderName
+        End If
     Next
 End Sub
-
 
 ' Function to regex filter the common symbol strings
 Function EscapeRegExp(str)
@@ -168,26 +206,47 @@ Sub UpdateProgress(current, total)
     WScript.StdOut.Write "Progress: " & percentDone & "% " & vbCrLf
 End Sub
 
+' Function to log changes to an output file
+Sub LogToFile(filePath, logEntry)
+    Dim fs, outFile
+    Set fs = CreateObject("Scripting.FileSystemObject")
+
+    ' Check if the file already exists, if not, create a new one
+    If Not fs.FileExists(filePath) Then
+        Set outFile = fs.CreateTextFile(filePath, True)
+    Else
+        Set outFile = fs.OpenTextFile(filePath, 8, True) ' 8 = FileAppend
+    End If
+
+    ' Write the log entry to the file
+    outFile.Write logEntry & vbCrLf
+
+    ' Close the file
+    outFile.Close
+End Sub
+
 ' Display Output Message
-Function DisplayMessage(condition)
+Sub DisplayMessage(condition, outputFile)
     Select Case condition 
     Case "Success"
         ' WScript.Echo "Files renamed successfully!"
-        MsgBox "Files renamed successfully.", vbInformation, "Confirmation"
+        MsgBox "Files renamed successfully. Log saved to: " & outputFile, vbInformation, "Confirmation"
     Case "No File"
         ' WScript.Echo "No files found with search!"
-        MsgBox "No files found with search!", vbError, "No File"
+        MsgBox "No files found with search!", vbExclamation, "No File"
     Case "Fail"
-        WScript.Echo "Files renaming failed!"
+        ' WScript.Echo "Files renaming failed!"
+        MsgBox "File Renaming Failed", vbError, "Error"
     End Select
-End Function
+End Sub
 
 ' Main code to read input from command line arguments and execute renaming
 Dim folderPath, searchWord, replaceWord, includeSubfolders, searchWordMatchCase, changeExtension, fileExtension, renameFolders
 
 ' Get command line arguments
 If WScript.Arguments.Count <> 8 Then
-    WScript.Echo "Invalid number of arguments!"
+    ' WScript.Echo "Invalid number of arguments!"
+    MsgBox "Invalid number of arguments!", vbError, "Error"
     WScript.Quit
 End If
 
@@ -202,7 +261,6 @@ renameFolders = CBool(WScript.Arguments(7))
 
 ' Execute renaming
 RenameFiles folderPath, searchWord, replaceWord, includeSubfolders, searchWordMatchCase, changeExtension, fileExtension, renameFolders
-
 
 
 
